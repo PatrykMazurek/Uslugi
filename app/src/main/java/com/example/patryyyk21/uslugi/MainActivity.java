@@ -22,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         tvTime = (TextView)findViewById(R.id.textView);
-        Button bStart = (Button)findViewById(R.id.button);
-        Button bStop = (Button)findViewById(R.id.button1);
+        Button bStart = (Button)findViewById(R.id.b_StartService);
+        Button bStop = (Button)findViewById(R.id.b_StopService);
 
         bStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,6 +43,27 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter intentFilter =
+                new IntentFilter("com.example.patryyyk21.uslugi.MyService");
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(testReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(testReceiver);
+    }
+
+    private BroadcastReceiver testReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            tvTime.setText(String.valueOf(intent.getStringExtra("value")));
+        }
+    };
 }
 
 
