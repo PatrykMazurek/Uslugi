@@ -8,7 +8,6 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
@@ -46,13 +45,40 @@ public class MyService extends IntentService {
                 Random rand = new Random();
                 int r = rand.nextInt();
                 Message("Zwrócono numer " + String.valueOf(r));
+                UpdateUI("Zwrócono numer " + String.valueOf(r));
             }catch (Exception ex){
                 ex.printStackTrace();
             }
         }
     }
 
+    private void UpdateUI(String message){
+        Intent intent = new Intent("com.example.patryyyk21.uslugi.MyService");
+        intent.putExtra("value", message);
+        intent.putExtra("code", Activity.RESULT_OK);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
     private void Message(String message){
-        Toast.makeText(getApplicationContext(),""+ message, Toast.LENGTH_SHORT ).show();
+        Intent intent = new Intent(this, MainActivity.class);
+        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(this, 0, intent, 0);
+        Notification notification = new Notification.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Usługa")
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .build();
+
+        Random rand = new Random();
+        int r = rand.nextInt(10);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(r, notification);
+
     }
 }
